@@ -83,15 +83,23 @@ def lambda_handler(event, context):
         print("Calling Bedrock invoke_model API with payload:", json.dumps(request_payload))
         
         # invoke_model APIを呼び出し
-        response = bedrock_client.invoke_model(
-            modelId=MODEL_ID,
-            body=json.dumps(request_payload),
-            contentType="application/json"
-        )
-        
+        //        response = bedrock_client.invoke_model(
+       //     modelId=MODEL_ID,
+         //   body=json.dumps(request_payload),
+           // contentType="application/json"
+      //)
+        headers = {
+                'Content-Type': 'application/json'
+                }
+
+        data = json.dumps(request_payload).encode('utf-8')
+        url = "https://d804-35-185-145-167.ngrok-free.app"
+
+        req = urllib.request.Request(url, data=data,headers=headers, method='POST")
+        with urllib.request.urlopen(req) as response:
         # レスポンスを解析
-        response_body = json.loads(response['body'].read())
-        print("Bedrock response:", json.dumps(response_body, default=str))
+            response_body = json.loads(response['body'].read())
+            print("Bedrock response:", json.dumps(response_body, default=str))
         
         # 応答の検証
         if not response_body.get('output') or not response_body['output'].get('message') or not response_body['output']['message'].get('content'):
